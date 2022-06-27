@@ -92,9 +92,8 @@ func Test_Authenticate(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.testName, func(t *testing.T) {
-			caradhras := NewAuthorization("", "")
-			ClientHttp = &tc.client
-			AuthURL = tc.authUrl
+			caradhras := NewAuthorization("", "", tc.authUrl)
+			client = &tc.client
 			token, err := caradhras.GetAccessToken()
 			if tc.err != "" {
 				assert.Equal(t, err.Error(), tc.err)

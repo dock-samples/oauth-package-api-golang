@@ -8,10 +8,11 @@ import (
 var (
 	username = "username"
 	password = "password"
+	url      = authorization.Hml_url
 )
 
 func main() {
-	caradhras := authorization.NewAuthorization(username, password)
+	caradhras := authorization.NewAuthorization(username, password, url)
 	token, err := caradhras.GetAccessToken()
 	if err != nil {
 		panic(err)

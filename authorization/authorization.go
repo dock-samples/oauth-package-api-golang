@@ -11,14 +11,16 @@ import (
 )
 
 var (
-	ClientHttp ClientHTTPInterface = &http.Client{Timeout: 60 * time.Second}
-	AuthURL                        = "https://auth.hml.caradhras.io/oauth2/token?grant_type=client_credentials"
+	client   ClientHTTPInterface = &http.Client{Timeout: 60 * time.Second}
+	Hml_url                      = "https://auth.hml.caradhras.io/oauth2/token?grant_type=client_credentials"
+	Prod_url                     = "https://auth.caradhras.io/oauth2/token?grant_type=client_credentials"
 )
 
-func NewAuthorization(username, password string) *Authorization {
+func NewAuthorization(username, password, url string) *Authorization {
 	return &Authorization{
 		username: username,
 		password: password,
+		url:      url,
 	}
 }
 
@@ -43,14 +45,14 @@ func (a *Authorization) oauth() (oauthResponse, error) {
 
 	basicAuth := base64.StdEncoding.EncodeToString([]byte(a.username + ":" + a.password))
 
-	request, err := http.NewRequest(http.MethodPost, AuthURL, nil)
+	request, err := http.NewRequest(http.MethodPost, a.url, nil)
 	if err != nil {
 		return response, err
 	}
 	request.Header.Add("Authorization", "Basic "+basicAuth)
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	resp, err := ClientHttp.Do(request)
+	resp, err := client.Do(request)
 	if err != nil {
 		return response, err
 	}
@@ -85,6 +87,7 @@ type ClientHTTPInterface interface {
 type Authorization struct {
 	username    string
 	password    string
+	url         string
 	accessToken string
 	expiresIn   time.Time
 	lock        sync.Mutex

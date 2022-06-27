@@ -22,6 +22,7 @@ Before you use the sample, you must configure the following global variables:
 var (
     username = "username"
     password = "password"
+    url      = authorization.Hml_url
 )
 ```
 ### Executing program
