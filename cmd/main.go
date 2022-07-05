@@ -6,13 +6,13 @@ import (
 )
 
 var (
-	username = "username"
-	password = "password"
-	url      = authorization.Hml_url
+	username    = "username"
+	password    = "password"
+	environment = authorization.Homologation
 )
 
 func main() {
-	caradhras := authorization.NewAuthorization(username, password, url)
+	caradhras := authorization.New(username, password, environment)
 	token, err := caradhras.GetAccessToken()
 	if err != nil {
 		panic(err)

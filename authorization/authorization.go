@@ -11,12 +11,16 @@ import (
 )
 
 var (
-	client   ClientHTTPInterface = &http.Client{Timeout: 60 * time.Second}
-	Hml_url                      = "https://auth.hml.caradhras.io/oauth2/token?grant_type=client_credentials"
-	Prod_url                     = "https://auth.caradhras.io/oauth2/token?grant_type=client_credentials"
+	client       ClientHTTPInterface = &http.Client{Timeout: 60 * time.Second}
+	Homologation                     = "homologation"
+	Production                       = "production"
 )
 
-func NewAuthorization(username, password, url string) *Authorization {
+func New(username, password, environment string) *Authorization {
+	url := "https://auth.hml.caradhras.io/oauth2/token?grant_type=client_credentials"
+	if environment == Production {
+		url = "https://auth.caradhras.io/oauth2/token?grant_type=client_credentials"
+	}
 	return &Authorization{
 		username: username,
 		password: password,

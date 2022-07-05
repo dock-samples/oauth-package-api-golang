@@ -37,7 +37,6 @@ func Test_Authenticate(t *testing.T) {
 		testName string
 		client   MockClient
 		err      string
-		authUrl  string
 	}{
 		{"Success",
 			MockClient{DoFunc: func(req *http.Request) (*http.Response, error) {
@@ -47,28 +46,18 @@ func Test_Authenticate(t *testing.T) {
 				return &http.Response{StatusCode: http.StatusOK, Body: r}, nil
 			}},
 			"",
-			"https://auth.hml.caradhras.io/oauth2/token?grant_type=client_credentials",
-		},
-		{"http.NewRequest error",
-			MockClient{DoFunc: func(req *http.Request) (*http.Response, error) {
-				return &http.Response{}, errors.New("default error")
-			}},
-			"parse \"\\u007f\": net/url: invalid control character in URL",
-			string([]byte{0x7f}),
 		},
 		{"Client error",
 			MockClient{DoFunc: func(req *http.Request) (*http.Response, error) {
 				return &http.Response{}, errors.New("default error")
 			}},
 			"default error",
-			"https://auth.hml.caradhras.io/oauth2/token?grant_type=client_credentials",
 		},
 		{"ReadAll error",
 			MockClient{DoFunc: func(req *http.Request) (*http.Response, error) {
 				return &http.Response{Body: &MockReadCloser{}}, nil
 			}},
 			"read error",
-			"https://auth.hml.caradhras.io/oauth2/token?grant_type=client_credentials",
 		},
 		{"Invalid json error",
 			MockClient{DoFunc: func(req *http.Request) (*http.Response, error) {
@@ -77,7 +66,6 @@ func Test_Authenticate(t *testing.T) {
 				return &http.Response{Body: r}, nil
 			}},
 			"unexpected end of JSON input",
-			"https://auth.hml.caradhras.io/oauth2/token?grant_type=client_credentials",
 		},
 		{"Status code error",
 			MockClient{DoFunc: func(req *http.Request) (*http.Response, error) {
@@ -86,13 +74,12 @@ func Test_Authenticate(t *testing.T) {
 				return &http.Response{StatusCode: http.StatusBadRequest, Body: r}, nil
 			}},
 			"invalid token",
-			"https://auth.hml.caradhras.io/oauth2/token?grant_type=client_credentials",
 		},
 	}
 
 	for _, tc := range cases {
 		t.Run(tc.testName, func(t *testing.T) {
-			caradhras := NewAuthorization("", "", tc.authUrl)
+			caradhras := New("", "", Homologation)
 			client = &tc.client
 			token, err := caradhras.GetAccessToken()
 			if tc.err != "" {
